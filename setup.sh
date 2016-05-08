@@ -18,9 +18,9 @@ rpi-update
 ntpdate -u pool.ntp.org
 
 # Let's setup speech using festival, just for fun!
-sed -i 's/printf "My IP address is %s\n" "$_IP"/printf "My IP address is %s\n" "$_IP" | festival --tts' /etc/rc.local
+grep 'festival' /etc/rc.local || sed -i 's/printf "My IP address is %s\n" "$_IP"/printf "My IP address is %s\n" "$_IP" | festival --tts' /etc/rc.local
 
 # Setup Startup script.
-grep "$CWD/startup.sh" /etc/rc.local || sed -i -e '$i \sh $CWD/startup.sh &\n' /etc/rc.local
-chmod +x $0
+grep "$CWD/startup.sh" /etc/rc.local || sudo sed -i -e '$i \sh '$CWD'/startup.sh &\n' /etc/rc.local
+chmod +x "$CWD/startup.sh"
 #EOF
