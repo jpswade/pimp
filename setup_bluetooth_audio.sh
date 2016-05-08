@@ -7,13 +7,12 @@
 # @see https://wiki.archlinux.org/index.php/Bluetooth_headset
 # @see https://help.ubuntu.com/community/BluetoothPulseaudioTroubleshooting
 # @see http://wiki.openmoko.org/wiki/A2DP
-# @see https://gist.github.com/acruise/7ec24d91690866a94932
 
 # Include environment settings.
 source .env
 
 # Install packages.
-apt-get install pi-bluetooth bluetooth bluez bluez-tools pulseaudio pavucontrol pulseaudio-module-bluetooth
+apt-get install pi-bluetooth bluetooth bluez bluez-tools pulseaudio pavucontrol pulseaudio-module-bluetooth expect
 
 # Configure BlueTooth to auto connect audio.
 sed -i 's/AutoConnect=false/AutoConnect=true/g' /etc/bluetooth/audio.conf
@@ -38,20 +37,13 @@ for mac in $scan; do
     done
     if [ $found -eq 0 ]; then
         echo "NEW DEVICE FOUND: $mac"
-        bt-device -c $mac
-        if [ $? -eq 1 ]; then
-            echo "Paired with $mac"
-        fi
-        bt-device --set $mac Trusted 1
-        if [ $? -eq 0 ]; then
-            echo "Trusted $mac"
-        fi
+        # Connect
+        expect setup_bt_pair.exp $mac $BLUETOOTH_PIN
     fi
     macu=$(echo $mac |tr ":" "_")
-    #macu=00_1F_81_88_89_14
     dbus-send --print-reply --system --dest=org.bluez /org/bluez/hci0/dev_$macu org.bluez.Device1.Connect
     if [ $? -eq 0 ]; then
-        echo "Connected to $mac"
+        echo "Connected to $mac."
     fi
 done
 

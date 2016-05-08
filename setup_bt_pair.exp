@@ -1,0 +1,45 @@
+#!/usr/bin/env expect
+# @see https://github.com/ostroproject/meta-iotqa/blob/master/lib/oeqa/runtime/bluetooth/files/bt_pair_master.exp
+# @see https://github.com/kvaps/docker-pulseaudio-bluetooth/blob/master/simple-bluetooth-agent.sh
+# @see https://github.com/guciek/linuxutils/blob/master/bt-connect
+# @see https://gist.github.com/acruise/7ec24d91690866a94932
+# @see https://www.reddit.com/r/linuxquestions/comments/42dz8y/using_expect_to_automate_bluetoothctl/
+# @see https://gist.github.com/RamonGilabert/046727b302b4d9fb0055
+#!/usr/bin/expect
+set timeout 20
+set prompt  "#"
+if {[llength $argv]==0} { puts "usage: $argv0 <mac> <pin>, eg: 00:1F:81:88:89:14 0000"; exit; }
+set mac [lindex $argv 0]
+set pin [lindex $argv 1]
+spawn sudo bluetoothctl -a
+expect -re $prompt
+send "remove $mac\r"
+sleep 1
+#expect "Device $mac not available"
+expect -re $prompt
+send "agent on\r";
+expect "Agent registered"
+send "default-agent\r";
+expect "Default agent request successful"
+send "scan on\r";
+send_user "\nSleeping\r"
+sleep 5
+send_user "\Sleeping Done...\r"
+expect "*$mac*"
+#expect "Controller"
+send "pair $mac\r"
+sleep 1
+expect "Request PIN code"
+send "$pin\r"
+sleep 1
+expect "Pairing successful"
+send "trust $mac\r"
+sleep 1
+expect "Changing $mac trust succeeded"
+send "connect $mac\r"
+expect "Connection successful"
+sleep 1
+send_user "\nShould be paired now.\r"
+send "quit\r"
+expect eof
+#EOF
