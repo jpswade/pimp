@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+### setup_bluetooth.sh - Setup a Bluetooth Speaker/Audio on Raspbian.
+# @see https://www.freedesktop.org/wiki/Software/PulseAudio/FAQ/
+# @see http://blog.whatgeek.com.pt/2014/04/raspberry-pi-bluetooth-wireless-speaker/
+# @see http://linuxcommando.blogspot.co.uk/2013/11/how-to-connect-to-bluetooth.html
+# @see http://forums.debian.net/viewtopic.php?f=7&t=124230
+# @see https://wiki.archlinux.org/index.php/Bluetooth_headset
+# @see https://help.ubuntu.com/community/BluetoothPulseaudioTroubleshooting
+# @see http://wiki.openmoko.org/wiki/A2DP
+# @see https://gist.github.com/acruise/7ec24d91690866a94932
+
+# Include environment settings.
+source .env
+
+# Install packages.
+apt-get install pi-bluetooth bluetooth bluez bluez-tools pulseaudio pavucontrol pulseaudio-module-bluetooth
+
+# Configure BlueTooth to auto connect audio.
+sed -i 's/AutoConnect=false/AutoConnect=true/g' /etc/bluetooth/audio.conf
+
+# Restart interface.
+sudo service bluetooth restart
+
+# Start agent.
+bt-agent -d
+
+# Find the hardware id.
+scan=$( hcitool scan | grep ":" | cut -f2 )
+
+# Pair with the device
+paired=$( bt-device --list | grep "(" | cut -d "(" -f2 | cut -d ")" -f1 )
+for mac in $scan; do
+    found=0
+    for pair in $paired; do
+        if [[ "$mac" == "$pair" ]]; then
+            found=1
+        fi
+    done
+    if [ $found -eq 0 ]; then
+        echo "NEW DEVICE FOUND: $mac"
+        bt-device -c $mac
+        if [ $? -eq 1 ]; then
+            echo "Paired with $mac"
+        fi
+        bt-device --set $mac Trusted 1
+        if [ $? -eq 0 ]; then
+            echo "Trusted $mac"
+        fi
+    fi
+    macu=$(echo $mac |tr ":" "_")
+    #macu=00_1F_81_88_89_14
+    dbus-send --print-reply --system --dest=org.bluez /org/bluez/hci0/dev_$macu org.bluez.Device1.Connect
+    if [ $? -eq 0 ]; then
+        echo "Connected to $mac"
+    fi
+done
+
+# Configure PulseAudio over TCP.
+#pactl load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
+sed -i 's/#load-module module-native-protocol-tcp/load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1/g' /etc/pulse/default.pa
+
+# Configure PulseAudio to BlueTooth.
+#pactl load-module module-alsa-sink device=bluetooth
+sed -i 's/#load-module module-alsa-sink/load-module module-alsa-sink device=bluetooth/g' /etc/pulse/default.pa
+
+# Configure PulseAudio to switch on connect.
+#pactl load-module module-switch-on-connect
+load_module=module-switch-on-connect
+grep "load-module $load_module" /etc/pulse/default.pa || sudo bash -c "echo load-module $load_module>>/etc/pulse/default.pa"
+
+# Start pulse audio.
+#start-pulseaudio-x11
+sudo killall -9 pulseaudio
+sudo pulseaudio -D --system
+#/etc/init.d/alsa-utils restart
+#pulseaudio --kill
+#pulseaudio --start
+
+# Set PulseAudio to use the BlueTooth audio by default.
+sink_name=`pacmd list-sinks | grep bluez.sink | cut -f2 -d '<' | cut -f1 -d '>'`
+sink_card=`pacmd list-sinks | grep bluez.card | cut -f2 -d '<' | cut -f1 -d '>'`
+pactl set-card-profile $sink_card a2dp
+pacmd set-default-sink $sink_name
+
+# Set volume.
+pactl -- set-sink-volume $sink_name 0
+pactl -- set-sink-volume $sink_name +75%
+
+# Switch input to sink.
+input_index=$(pacmd list-sink-inputs | awk '$1 == "index:" {print $2}')
+sink_index=$(pacmd list-sinks | awk '$1 == "*" && $2 == "index:" {print $3}')
+pacmd move-sink-input $input_index $sink_index
+
+# Done.
+echo Done!
+
+#EOF
