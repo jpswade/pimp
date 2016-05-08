@@ -20,22 +20,7 @@ apt-get update && apt-get --yes install upmpdcli
 pip install --upgrade pip
 
 # Install Mopidy and packages via pip to get the latest version.
-pip install -U utils mopidy mopidy-local-sqlite mopidy-scrobbler mopidy-soundcloud mopidy-dirble mopidy-tunein mopidy-gmusic mopidy-subsonic mopidy-mobile mopidy-moped mopidy-musicbox-webclient mopidy-websettings mopidy-internetarchive mopidy-podcast mopidy-podcast-itunes Mopidy-Simple-Webclient mopidy-somafm mopidy-youtube
-
-# Install Mopidy BlueTooth
-git clone https://github.com/liamw9534/mopidy-btmanager.git
-cd mopidy-btmanager
-sudo python setup.py install && rm -fr mopidy-btmanager
-
-sudo grep '\[btmanager\]' /etc/mopidy/mopidy.conf || sudo bash -c 'cat >> /etc/mopidy/mopidy.conf <<EOT
-
-[btmanager]
-enabled = true
-name = mopidy
-pincode = 0000
-autoconnect = true
-attach_audio_sink = true
-EOT'
+pip install -U utils mopidy mopidy-local-sqlite mopidy-scrobbler mopidy-soundcloud mopidy-dirble mopidy-tunein mopidy-gmusic mopidy-subsonic mopidy-mobile mopidy-moped mopidy-musicbox-webclient mopidy-websettings mopidy-internetarchive mopidy-podcast mopidy-podcast-itunes Mopidy-Simple-Webclient mopidy-somafm mopidy-youtube Mopidy-Qsaver
 
 # Bugs
 #pip uninstall -y mopidy-podcast-gpodder.net
@@ -46,9 +31,6 @@ EOT'
 # Install these packages on their own to avoid the "Double requirement given" error.
 pip install -U pyspotify Mopidy-Spotify mopidy-spotify-tunigo
 pip install -U mopidy-gmusic
-
-# Correct permissions
-chown -R mopidy:mopidy /var/lib/mopidy/
 
 # Configure HTTP.
 #sudo mopidyctl config
@@ -68,6 +50,17 @@ grep '\[audio\]' /etc/mopidy/mopidy.conf || sudo bash -c 'cat >> /etc/mopidy/mop
 [audio]
 output = pulsesink server=127.0.0.1
 EOT'
+
+# Configure QSaver.
+sudo grep '\[qsaver\]' /etc/mopidy/mopidy.conf || sudo bash -c 'cat >> /etc/mopidy/mopidy.conf <<EOT
+
+[qsaver]
+enabled = true
+backup_file = ./tracklist_backup.json
+EOT'
+
+# Correct permissions
+chown -R mopidy:mopidy /var/lib/mopidy/
 
 # Start Mopidy.
 systemctl enable mopidy
