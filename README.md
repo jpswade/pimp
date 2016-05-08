@@ -11,6 +11,18 @@ The Raspberry Pi 3 lends itself very nicely to this project as it has built in W
 We'll be using the Wifi connection for streaming media from the Internet and
 the BlueTooth to connect to an existing stereo system or speaker.
 
+### Do we really need another music box project?
+
+I'm glad you asked.
+
+This project is really designed for those of you that like to tinker.
+ 
+No need to reimage your Raspberry Pi SD card.
+
+It's designed not to take over the entire system.
+
+It only does what it needs in order to play music.
+
 ## Prerequisites
 
 ### Hardware
@@ -34,21 +46,14 @@ Note: You may need a keyboard and mouse to begin with, I recommend the [Logitech
 
 ## Setup
 
-We'll be setting up 5 things:
+We'll be setting up 4 things:
 
 * Wifi
-* OS
 * VNC
 * BlueTooth Audio
 * Mopidy (Music Player)
 
 The scripts in this repository will set this up for you.
-
-## Troubleshooting
-
-### My BlueTooth Audio device won't autommatically reconnect on boot
-
-This is a known issue. I don't yet have enough information to resolve it.
 
 ## See also
 
