@@ -27,7 +27,7 @@ It only does what it needs in order to play music.
 
 ### Hardware
 
-* [Raspberry Pi 3)](http://amzn.to/1SVYyuY)
+* [Raspberry Pi 3](http://amzn.to/1SVYyuY)
 * [Samsung Memory 32GB Evo MicroSDHC UHS-I Grade 1 Class 10 Memory Card](http://amzn.to/1CPrL5c)
 * [Raspberry Pi Official Universal Power Supply Unit](http://amzn.to/1efVJmU)
 
