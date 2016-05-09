@@ -12,7 +12,7 @@ apt-get update && \
 apt-get --yes install wget unzip mc ntpdate binutils chromium-browser unclutter ttf-mscorefonts-installer festival festvox-kallpc16k
 
 # Update Pi
-rpi-update
+#rpi-update #may require reboot
 
 # Update time, to prevent update problems
 ntpdate -u pool.ntp.org
