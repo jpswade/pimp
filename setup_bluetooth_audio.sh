@@ -14,8 +14,28 @@ source .env
 # Install packages.
 apt-get --yes install pi-bluetooth bluetooth bluez bluez-tools pulseaudio pavucontrol pulseaudio-module-bluetooth expect
 
-# Configure BlueTooth to auto connect audio.
-sed -i 's/AutoConnect=false/AutoConnect=true/g' /etc/bluetooth/audio.conf
+# Configure PulseAudio over TCP.
+#pactl load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
+sed -i 's/#load-module module-native-protocol-tcp/load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1 listen=0.0.0.0/g' /etc/pulse/default.pa
+#load_module=load-module module-native-protocol-tcp
+#grep "load-module $load_module" /etc/pulse/default.pa || sudo bash -c "echo load-module $load_module auth-ip-acl=127.0.0.1 listen=0.0.0.0>>/etc/pulse/default.pa"
+
+# Configure PulseAudio to BlueTooth.
+#pactl load-module module-alsa-sink device=bluetooth
+sed -i 's/#load-module module-alsa-sink/load-module module-alsa-sink device=bluetooth/g' /etc/pulse/default.pa
+
+# Configure PulseAudio to switch on connect.
+#pactl load-module module-switch-on-connect
+load_module=module-switch-on-connect
+grep "load-module $load_module" /etc/pulse/default.pa || sudo bash -c "echo load-module $load_module>>/etc/pulse/default.pa"
+
+# Start pulse audio.
+#start-pulseaudio-x11
+sudo killall -9 pulseaudio
+sudo pulseaudio -D --system
+#/etc/init.d/alsa-utils restart
+#pulseaudio --kill
+#pulseaudio --start
 
 # Restart interface.
 sudo service bluetooth restart
@@ -47,28 +67,9 @@ for mac in $scan; do
     fi
 done
 
-# Configure PulseAudio over TCP.
-#pactl load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
-sed -i 's/#load-module module-native-protocol-tcp/load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1 listen=0.0.0.0/g' /etc/pulse/default.pa
-#load_module=load-module module-native-protocol-tcp
-#grep "load-module $load_module" /etc/pulse/default.pa || sudo bash -c "echo load-module $load_module auth-ip-acl=127.0.0.1 listen=0.0.0.0>>/etc/pulse/default.pa"
 
-# Configure PulseAudio to BlueTooth.
-#pactl load-module module-alsa-sink device=bluetooth
-sed -i 's/#load-module module-alsa-sink/load-module module-alsa-sink device=bluetooth/g' /etc/pulse/default.pa
-
-# Configure PulseAudio to switch on connect.
-#pactl load-module module-switch-on-connect
-load_module=module-switch-on-connect
-grep "load-module $load_module" /etc/pulse/default.pa || sudo bash -c "echo load-module $load_module>>/etc/pulse/default.pa"
-
-# Start pulse audio.
-#start-pulseaudio-x11
-sudo killall -9 pulseaudio
-sudo pulseaudio -D --system
-#/etc/init.d/alsa-utils restart
-#pulseaudio --kill
-#pulseaudio --start
+# Setup bluetooth Discovery
+pactl -s 127.0.0.1 load-module module-bluetooth-discover
 
 # Set PulseAudio to use the BlueTooth audio by default.
 sink_name=`pactl -s 127.0.0.1 list-sinks | grep bluez.sink | cut -f2 -d '<' | cut -f1 -d '>'`
