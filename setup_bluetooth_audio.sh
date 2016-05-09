@@ -49,9 +49,9 @@ done
 
 # Configure PulseAudio over TCP.
 #pactl load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
-#sed -i 's/#load-module module-native-protocol-tcp/load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1/g' /etc/pulse/default.pa
-load_module=load-module module-native-protocol-tcp
-grep "load-module $load_module" /etc/pulse/default.pa || sudo bash -c "echo load-module $load_module auth-ip-acl=127.0.0.1>>/etc/pulse/default.pa"
+sed -i 's/#load-module module-native-protocol-tcp/load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1 listen=0.0.0.0/g' /etc/pulse/default.pa
+#load_module=load-module module-native-protocol-tcp
+#grep "load-module $load_module" /etc/pulse/default.pa || sudo bash -c "echo load-module $load_module auth-ip-acl=127.0.0.1 listen=0.0.0.0>>/etc/pulse/default.pa"
 
 # Configure PulseAudio to BlueTooth.
 #pactl load-module module-alsa-sink device=bluetooth
