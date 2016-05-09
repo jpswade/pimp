@@ -55,6 +55,12 @@ We'll be setting up 4 things:
 
 The scripts in this repository will set this up for you.
 
+To get started just download this git repo:
+```
+git clone https://github.com/jpswade/pimp.git
+cd pimp && sh setup.sh
+```
+
 ## See also
 
 * [Pi Media Server](https://github.com/jpswade/pims)
