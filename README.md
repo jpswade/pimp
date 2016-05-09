@@ -16,12 +16,8 @@ the BlueTooth to connect to an existing stereo system or speaker.
 I'm glad you asked.
 
 This project is really designed for those of you that like to tinker.
- 
-No need to reimage your Raspberry Pi SD card.
 
-It's designed not to take over the entire system.
-
-It only does what it needs in order to play music.
+It should only do what it needs in order to play the music.
 
 ## Prerequisites
 
