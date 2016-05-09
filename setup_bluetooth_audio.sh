@@ -71,19 +71,19 @@ sudo pulseaudio -D --system
 #pulseaudio --start
 
 # Set PulseAudio to use the BlueTooth audio by default.
-sink_name=`pacmd list-sinks | grep bluez.sink | cut -f2 -d '<' | cut -f1 -d '>'`
-sink_card=`pacmd list-sinks | grep bluez.card | cut -f2 -d '<' | cut -f1 -d '>'`
-pactl set-card-profile $sink_card a2dp
-pacmd set-default-sink $sink_name
+sink_name=`pactl -s 127.0.0.1 list-sinks | grep bluez.sink | cut -f2 -d '<' | cut -f1 -d '>'`
+sink_card=`pactl -s 127.0.0.1 list-sinks | grep bluez.card | cut -f2 -d '<' | cut -f1 -d '>'`
+pactl -s 127.0.0.1 set-card-profile $sink_card a2dp
+pactl -s 127.0.0.1 set-default-sink $sink_name
 
 # Set volume.
-pactl -- set-sink-volume $sink_name 0
-pactl -- set-sink-volume $sink_name +75%
+pactl -s 127.0.0.1 -- set-sink-volume $sink_name 0
+pactl -s 127.0.0.1 -- set-sink-volume $sink_name +75%
 
 # Switch input to sink.
-input_index=$(pacmd list-sink-inputs | awk '$1 == "index:" {print $2}')
-sink_index=$(pacmd list-sinks | awk '$1 == "*" && $2 == "index:" {print $3}')
-pacmd move-sink-input $input_index $sink_index
+input_index=$(pactl -s 127.0.0.1 list-sink-inputs | awk '$1 == "index:" {print $2}')
+sink_index=$(pactl -s 127.0.0.1 list-sinks | awk '$1 == "*" && $2 == "index:" {print $3}')
+pactl -s 127.0.0.1 move-sink-input $input_index $sink_index
 
 # Done.
 echo Done!
