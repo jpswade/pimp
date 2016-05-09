@@ -11,7 +11,7 @@ wget -q -O /etc/apt/sources.list.d/mopidy.list http://apt.mopidy.com/mopidy.list
 apt-get update
 apt-get --yes --no-install-suggests --no-install-recommends install inetutils-tools inetutils-ping iptables logrotate alsa-utils wpasupplicant gstreamer0.10-alsa ifplugd gstreamer0.10-fluendo-mp3 gstreamer0.10-tools samba dos2unix avahi-utils alsa-base cifs-utils avahi-autoipd libnss-mdns ca-certificates ncmpcpp rpi-update alsa-firmware-loaders iw atmel-firmware firmware-atheros firmware-brcm80211 firmware-iwlwifi firmware-libertas firmware-linux firmware-linux-nonfree firmware-ralink firmware-realtek zd1211-firmware iptables build-essential python-dev python-pip python-gst0.10 gstreamer0.10-plugins-good gstreamer0.10-plugins-bad gstreamer0.10-plugins-ugly usbmount monit watchdog dropbear mpc dosfstools libffi6 libffi-dev libssl-dev gstreamer1.0-tools gir1.2-gstreamer-1.0 gir1.2-gst-plugins-base-1.0 gstreamer1.0-plugins-ugly python-gst-1.0 python-tornado python-pykka libssl1.0.0 libjs-sphinxdoc python-pycurl libjs-underscore pulseaudio gstreamer1.0-pulseaudio mopidy
 #apt-get install python-spotify libspotify-dev
-apt-get install firmware-ipw2x00 # requires interaction, license agreement
+#apt-get install firmware-ipw2x00 # requires interaction, license agreement -- do we need this?
 #apt-get install upmpdcli # E: Unable to locate package upmpdcli
 printf "deb http://www.lesbonscomptes.com/upmpdcli/downloads/debian/ unstable main\ndeb-src http://www.lesbonscomptes.com/upmpdcli/downloads/debian/ unstable main">/etc/apt/sources.list.d/upmpdcli.list
 apt-get update && apt-get --yes install upmpdcli
