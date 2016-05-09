@@ -12,7 +12,7 @@
 source .env
 
 # Install packages.
-apt-get install pi-bluetooth bluetooth bluez bluez-tools pulseaudio pavucontrol pulseaudio-module-bluetooth expect
+apt-get --yes install pi-bluetooth bluetooth bluez bluez-tools pulseaudio pavucontrol pulseaudio-module-bluetooth expect
 
 # Configure BlueTooth to auto connect audio.
 sed -i 's/AutoConnect=false/AutoConnect=true/g' /etc/bluetooth/audio.conf
