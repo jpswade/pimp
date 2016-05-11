@@ -4,12 +4,7 @@
 # Current Working Directory.
 readonly CWD=$(cd $(dirname $0); pwd)
 
-# Check for .env file
-if [ ! -f .env ]; then
-    touch .env
-fi
-
-# OS Upgrade
+# OS Upgrade.
 sudo apt-get update && sudo apt-get upgrade -y
 
 # Install the packages that we may need:
@@ -19,7 +14,7 @@ apt-get --yes install wget unzip mc ntpdate binutils unclutter ttf-mscorefonts-i
 # Update Pi
 #rpi-update #may require reboot
 
-# Update time, to prevent update problems
+# Update time, to prevent update problems.
 ntpdate -u pool.ntp.org
 
 # Let's setup speech using festival, just for fun!
