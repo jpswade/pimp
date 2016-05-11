@@ -17,7 +17,7 @@ if [ ! -f ~/.vnc/passwd ]; then
 fi
 
 # Overwrite desktop file
-cat > /usr/share/applications <<EOT
+cat > /usr/share/applications/x11vnc.desktop <<EOT
 [Desktop Entry]
 Name=X11VNC Server
 Comment=Share this desktop by VNC
