@@ -40,6 +40,9 @@ sudo pulseaudio -D --system
 # Restart interface.
 sudo service bluetooth restart
 
+# Bring the device up.
+sudo hciconfig device up
+
 # Start agent.
 bt-agent -d
 
