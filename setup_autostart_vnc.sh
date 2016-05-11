@@ -2,7 +2,7 @@
 ### Setup Autostart VNC Server on Raspbian.
 # x11vnc mirrors what you will see on the screen, unlike tightvncserver which creates a new session.
 
-if [ ! $(hash x11vnc 2>/dev/null) ]; then
+if ! hash x11vnc 2>/dev/null; then
    sudo apt-get update && \
    sudo apt-get upgrade -y && \
    sudo apt-get install x11vnc -y
