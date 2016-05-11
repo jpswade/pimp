@@ -9,7 +9,7 @@ sudo apt-get update && sudo apt-get upgrade -y
 
 # Install the packages that we may need:
 apt-get update && \
-apt-get --yes install wget unzip mc ntpdate binutils chromium-browser unclutter ttf-mscorefonts-installer festival festvox-kallpc16k
+apt-get --yes install wget unzip mc ntpdate binutils unclutter ttf-mscorefonts-installer festival festvox-kallpc16k
 
 # Update Pi
 #rpi-update #may require reboot
