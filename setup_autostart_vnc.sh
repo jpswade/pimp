@@ -16,21 +16,20 @@ if [ ! -f ~/.vnc/passwd ]; then
     x11vnc -storepasswd "raspberry" ~/.vnc/passwd
 fi
 
-# Create autostart
-if [ ! -f ~/.config/autostart/x11vnc.desktop ]; then
-    mkdir -p ~/.config/autostart
-    cat >> ~/.config/autostart/x11vnc.desktop <<EOT
-    [Desktop Entry]
-    Encoding=UTF-8
-    Type=Application
-    Name=X11VNC Daemon
-    Comment=Share this desktop by VNC
-    Exec=x11vnc -forever -usepw -httpport 5900 -display :0 -ultrafilexfer -ncache -ncache 10
-    StartupNotify=false
-    Terminal=false
-    Hidden=false"
+# Overwrite desktop file
+cat > /usr/share/applications <<EOT
+[Desktop Entry]
+Name=X11VNC Server
+Comment=Share this desktop by VNC
+Exec=x11vnc -forever -usepw -httpport 5900 -display :0 -ultrafilexfer -ncache -ncache 10 -o %%HOME/.x11vnc.log.%%VNCDISPLAY
+Icon=computer
+Terminal=false
+Hidden=false
+Type=Application
+StartupNotify=false
+#StartupWMClass=x11vnc_port_prompt
+Categories=Network;RemoteAccess;
 EOT
-fi
 
 # @see http://askubuntu.com/questions/5172/running-a-desktop-file-in-the-terminal
 gtk-launch x11vnc
