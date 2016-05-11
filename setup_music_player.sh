@@ -71,11 +71,14 @@ systemctl start mopidy
 #service mopidy run local scan
 mopidyctl local scan
 
+# Set IP Address
+IP_ADDR=`hostname  -I | cut -f1 -d' '`
+
 # Update library via RPC call.
-curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.library.refresh"}' http://localhost:6680/mopidy/rpc
+curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.library.refresh"}' http://$IP_ADDR:6680/mopidy/rpc
 
 # Display network information.
-echo open http://`hostname  -I | cut -f1 -d' '`:6680
+echo open http://$IP_ADDR:6680
 
 # Set the audio output.
 amixer cset numid=3 0 #Auto (HDMI if connected, else 3.5mm jack)
