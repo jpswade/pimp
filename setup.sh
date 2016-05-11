@@ -4,6 +4,11 @@
 # Current Working Directory.
 readonly CWD=$(cd $(dirname $0); pwd)
 
+# Check for .env file
+if [ ! -f .env ]; then
+    touch .env
+fi
+
 # OS Upgrade
 sudo apt-get update && sudo apt-get upgrade -y
 

@@ -7,6 +7,16 @@
 #WKEY=<wifi-password-key>
 source .env
 
+if [ -z $SSID ]; then
+    read -p "What is your Wifi SSID?" $SSID
+    echo "SSID=$SSID">>.env
+fi
+
+if [ -z $WKEY ]; then
+    read -p "What is your Wifi WKEY?" $WKEY
+    echo "WKEY=$WKEY">>.env
+fi
+
 ### Wireless Setup
 if ! grep -q "$SSID" /etc/wpa_supplicant/wpa_supplicant.conf ; then
     sudo sh -c "wpa_passphrase $SSID $WKEY>>/etc/wpa_supplicant/wpa_supplicant.conf"

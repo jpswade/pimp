@@ -8,8 +8,8 @@
 # @see https://help.ubuntu.com/community/BluetoothPulseaudioTroubleshooting
 # @see http://wiki.openmoko.org/wiki/A2DP
 
-# Include environment settings.
-source .env
+# Default settings.
+BLUETOOTH_PIN=0000
 
 # Install packages.
 apt-get --yes install pi-bluetooth bluetooth bluez bluez-tools pulseaudio pavucontrol pulseaudio-module-bluetooth expect
