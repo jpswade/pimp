@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 ### setup_wifi.sh - Setup WIFI on Raspbian
 
-### Import environment settings.
-# $ cat .env
-#SSID=<SSID>
-#WKEY=<wifi-password-key>
+# Check for .env file
+if [ ! -f .env ]; then
+    touch .env
+fi
+
+# Import environment settings.
 source .env
 
 if [ -z $SSID ]; then
@@ -41,9 +43,10 @@ if [ $? != 0 ]; then
 fi
 EOT
 sudo mv -f checkwifi.sh /usr/local/bin/checkwifi.sh
-sudo crontab -l | sudo tee /root/root.cron
-echo "*/5 * * * * /usr/bin/sudo -H /usr/bin/env bash /usr/local/bin/checkwifi.sh >> /dev/null 2>&1" | sudo tee -a /root/root.cron
-sudo crontab /root/root.cron
-sudo rm -fr /root/root.cron
-
+if ! grep -q "checkwifi.sh" /root/root.cron ; then
+    sudo crontab -l | sudo tee /root/root.cron
+    echo "*/5 * * * * /usr/bin/sudo -H /usr/bin/env bash /usr/local/bin/checkwifi.sh >> /dev/null 2>&1" | sudo tee -a /root/root.cron
+    sudo crontab /root/root.cron
+    sudo rm -fr /root/root.cron
+fi
 #EOF
