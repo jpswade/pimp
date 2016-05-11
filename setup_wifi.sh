@@ -8,12 +8,12 @@
 source .env
 
 if [ -z $SSID ]; then
-    read -p "What is your Wifi SSID?" $SSID
+    read -p "What is your Wifi SSID?" SSID
     echo "SSID=$SSID">>.env
 fi
 
 if [ -z $WKEY ]; then
-    read -p "What is your Wifi WKEY?" $WKEY
+    read -p "What is your Wifi WKEY?" WKEY
     echo "WKEY=$WKEY">>.env
 fi
 
