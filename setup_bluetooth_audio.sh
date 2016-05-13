@@ -65,6 +65,11 @@ for mac in $scan; do
     fi
     macu=$(echo $mac |tr ":" "_")
     dbus-send --print-reply --system --dest=org.bluez /org/bluez/hci0/dev_$macu org.bluez.Device1.Connect
+    echo pcm.speaker {\
+        type bluetooth\
+        device $mac\
+        profile "a2dp"\
+} > ~/.asoundrc
     if [ $? -eq 0 ]; then
         echo "Connected to $mac."
     fi
