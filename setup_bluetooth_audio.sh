@@ -20,14 +20,15 @@ sed -i 's/#load-module module-native-protocol-tcp/load-module module-native-prot
 #load_module=load-module module-native-protocol-tcp
 #grep "load-module $load_module" /etc/pulse/default.pa || sudo bash -c "echo load-module $load_module auth-ip-acl=127.0.0.1 listen=0.0.0.0>>/etc/pulse/default.pa"
 
-# Configure PulseAudio to BlueTooth.
-#pactl load-module module-alsa-sink device=bluetooth
-sed -i 's/#load-module module-alsa-sink/load-module module-alsa-sink device=bluetooth/g' /etc/pulse/default.pa
-
 # Configure PulseAudio to switch on connect.
 #pactl load-module module-switch-on-connect
 load_module=module-switch-on-connect
 grep "load-module $load_module" /etc/pulse/default.pa || sudo bash -c "echo load-module $load_module>>/etc/pulse/default.pa"
+
+# Configure daemon
+sed -i 's/; allow-module-loading = yes/allow-module-loading = yes/g' /etc/pulse/daemon.conf
+sed -i 's/; load-default-script-file = yes/load-default-script-file = yes/g' /etc/pulse/daemon.conf
+sed -i 's#; default-script-file = /etc/pulse/default.pa#default-script-file = /etc/pulse/default.pa#g' /etc/pulse/daemon.conf
 
 # Start pulse audio.
 #start-pulseaudio-x11
@@ -75,24 +76,28 @@ for mac in $scan; do
     fi
 done
 
+# Give root/pi users PulseAudio access (Fixes: Connection failure: Access denied)
+sudo adduser root pulse-access
+sudo adduser pi pulse-access
 
 # Setup bluetooth Discovery
-pactl -s 127.0.0.1 load-module module-bluetooth-discover
+sudo pactl unload-module module-bluetooth-discover
+sudo pactl load-module module-bluetooth-discover
 
 # Set PulseAudio to use the BlueTooth audio by default.
-sink_name=`pactl -s 127.0.0.1 list sinks | grep bluez.sink | cut -f2 -d '<' | cut -f1 -d '>'`
-sink_card=`pactl -s 127.0.0.1 list sinks | grep bluez.card | cut -f2 -d '<' | cut -f1 -d '>'`
-pactl -s 127.0.0.1 set-card-profile $sink_card a2dp
-pactl -s 127.0.0.1 set-default-sink $sink_name
+sink_name=`sudo pactl list sinks | grep bluez.sink | cut -f2 -d '<' | cut -f1 -d '>'`
+sink_card=`sudo pactl list sinks | grep bluez.card | cut -f2 -d '<' | cut -f1 -d '>'`
+sudo pactl set-card-profile $sink_card a2dp
+sudo pactl set-default-sink $sink_name
 
 # Set volume.
-pactl -s 127.0.0.1 -- set-sink-volume $sink_name 0
-pactl -s 127.0.0.1 -- set-sink-volume $sink_name +75%
+sudo pactl -- set-sink-volume $sink_name 0
+sudo pactl -- set-sink-volume $sink_name +75%
 
 # Switch input to sink.
-input_index=$(pactl -s 127.0.0.1 list sink-inputs | awk '$1 == "index:" {print $2}')
-sink_index=$(pactl -s 127.0.0.1 list sinks | awk '$1 == "*" && $2 == "index:" {print $3}')
-pactl -s 127.0.0.1 move-sink-input $input_index $sink_index
+input_index=$(sudo pcctl list sink-inputs | awk '$1 == "index:" {print $2}')
+sink_index=$(sudo pactl list sinks | awk '$1 == "*" && $2 == "index:" {print $3}')
+sudo pactl move-sink-input $input_index $sink_index
 
 # Done.
 echo Done!
