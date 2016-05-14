@@ -21,7 +21,7 @@ cat > /usr/share/applications/x11vnc.desktop <<EOT
 [Desktop Entry]
 Name=X11VNC Server
 Comment=Share this desktop by VNC
-Exec=x11vnc -forever -usepw -httpport 5900 -display :0 -ultrafilexfer -ncache -ncache 10 -o %%HOME/.x11vnc.log.%%VNCDISPLAY
+Exec=x11vnc -forever -usepw -httpport 5900 -display :0 -ultrafilexfer
 Icon=computer
 Terminal=false
 Hidden=false
