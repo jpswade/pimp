@@ -5,10 +5,11 @@
 readonly CWD=$(cd $(dirname $0); pwd)
 
 # OS Upgrade.
-sudo apt-get update && sudo apt-get upgrade -y
+# @see https://www.raspberrypi.org/blog/another-update-raspbian/
+sudo apt-get update && \
+sudo apt-get dist-upgrade -y
 
 # Install the packages that we may need:
-apt-get update && \
 apt-get --yes install wget unzip mc ntpdate binutils unclutter ttf-mscorefonts-installer festival festvox-kallpc16k
 
 # Update Pi
