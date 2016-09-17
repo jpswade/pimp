@@ -10,13 +10,13 @@ fi
 
 hash x11vnc 2>/dev/null || { echo >&2 "x11vnc command not found."; exit 1; }
 
-# Create for usepw
+# Create for the usepw parameter.
 if [ ! -f ~/.vnc/passwd ]; then
     mkdir -p ~/.vnc
     x11vnc -storepasswd "raspberry" ~/.vnc/passwd
 fi
 
-# Overwrite desktop file
+# Overwrite desktop file.
 cat > /usr/share/applications/x11vnc.desktop <<EOT
 [Desktop Entry]
 Name=X11VNC Server
