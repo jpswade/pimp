@@ -8,6 +8,9 @@
 # @see https://help.ubuntu.com/community/BluetoothPulseaudioTroubleshooting
 # @see http://wiki.openmoko.org/wiki/A2DP
 
+# Exit on failure.
+set -e
+
 # Default settings.
 BLUETOOTH_PIN=0000
 
@@ -18,12 +21,12 @@ apt-get --yes install pi-bluetooth bluetooth bluez bluez-tools pulseaudio pavuco
 #pactl load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
 sed -i 's/#load-module module-native-protocol-tcp/load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1 listen=0.0.0.0/g' /etc/pulse/default.pa
 #load_module=load-module module-native-protocol-tcp
-#grep "load-module $load_module" /etc/pulse/default.pa || sudo bash -c "echo load-module $load_module auth-ip-acl=127.0.0.1 listen=0.0.0.0>>/etc/pulse/default.pa"
+#grep "load-module $load_module" /etc/pulse/default.pa || bash -c "echo load-module $load_module auth-ip-acl=127.0.0.1 listen=0.0.0.0>>/etc/pulse/default.pa"
 
 # Configure PulseAudio to switch on connect.
 #pactl load-module module-switch-on-connect
 load_module=module-switch-on-connect
-grep "load-module $load_module" /etc/pulse/default.pa || sudo bash -c "echo load-module $load_module>>/etc/pulse/default.pa"
+grep "load-module $load_module" /etc/pulse/default.pa || bash -c "echo load-module $load_module>>/etc/pulse/default.pa"
 
 # Configure daemon
 sed -i 's/; allow-module-loading = yes/allow-module-loading = yes/g' /etc/pulse/daemon.conf
@@ -32,40 +35,40 @@ sed -i 's#; default-script-file = /etc/pulse/default.pa#default-script-file = /e
 
 # Start pulse audio.
 #start-pulseaudio-x11
-sudo killall -9 pulseaudio
-sudo pulseaudio -D --system
+killall -9 pulseaudio
+pulseaudio -D --system
 #/etc/init.d/alsa-utils restart
 #pulseaudio --kill
 #pulseaudio --start
 
 # Restart interface.
-sudo service bluetooth restart
+service bluetooth restart
 
 # Bring the device up.
-sudo hciconfig device up
+hciconfig device up
 
 # Start agent.
 bt-agent -d
 
 # Find the hardware id.
-scan=$( hcitool scan | grep ":" | cut -f2 )
+SCAN=$( hcitool scan | grep ":" | cut -f2 )
 
 # Pair with the device
-paired=$( bt-device --list | grep "(" | cut -d "(" -f2 | cut -d ")" -f1 )
-for mac in $scan; do
-    found=0
-    for pair in $paired; do
-        if [[ "$mac" == "$pair" ]]; then
-            found=1
+PAIRED=$( bt-device --list | grep "(" | cut -d "(" -f2 | cut -d ")" -f1 )
+for mac in ${SCAN}; do
+    FOUND=0
+    for PAIR in ${PAIRED}; do
+        if [[ "$MAC" == "$PAIR" ]]; then
+            FOUND=1
         fi
     done
-    if [ $found -eq 0 ]; then
-        echo "NEW DEVICE FOUND: $mac"
+    if [ $FOUND -eq 0 ]; then
+        echo "NEW DEVICE FOUND: $MAC"
         # Connect
-        expect setup_bt_pair.exp $mac $BLUETOOTH_PIN
+        expect setup_bt_pair.exp $MAC $BLUETOOTH_PIN
     fi
-    macu=$(echo $mac |tr ":" "_")
-    dbus-send --print-reply --system --dest=org.bluez /org/bluez/hci0/dev_$macu org.bluez.Device1.Connect
+    MACU=$(echo $mac |tr ":" "_")
+    dbus-send --print-reply --system --dest=org.bluez /org/bluez/hci0/dev_${MACU} org.bluez.Device1.Connect
     echo pcm.speaker {\
         type bluetooth\
         device $mac\
@@ -77,27 +80,37 @@ for mac in $scan; do
 done
 
 # Give root/pi users PulseAudio access (Fixes: Connection failure: Access denied)
-sudo adduser root pulse-access
-sudo adduser pi pulse-access
+adduser root pulse-access
+adduser pi pulse-access
 
-# Setup bluetooth Discovery
-sudo pactl unload-module module-bluetooth-discover
-sudo pactl load-module module-bluetooth-discover
+# Setup BlueTooth Discovery.
+pactl unload-module module-bluetooth-discover
+pactl load-module module-bluetooth-discover
 
 # Set PulseAudio to use the BlueTooth audio by default.
-sink_name=`sudo pactl list sinks | grep bluez.sink | cut -f2 -d '<' | cut -f1 -d '>'`
-sink_card=`sudo pactl list sinks | grep bluez.card | cut -f2 -d '<' | cut -f1 -d '>'`
-sudo pactl set-card-profile $sink_card a2dp
-sudo pactl set-default-sink $sink_name
+SINK_NAME=`pactl list sinks | grep bluez.sink | cut -f2 -d '<' | cut -f1 -d '>'`
+SINK_CARD=`pactl list sinks | grep bluez.card | cut -f2 -d '<' | cut -f1 -d '>'`
+pactl set-card-profile ${SINK_CARD} a2dp
+pactl set-default-sink ${SINK_NAME}
 
 # Set volume.
-sudo pactl -- set-sink-volume $sink_name 0
-sudo pactl -- set-sink-volume $sink_name +75%
+pactl -- set-sink-volume ${SINK_NAME} 0
+pactl -- set-sink-volume ${SINK_NAME} +75%
 
 # Switch input to sink.
-input_index=$(sudo pcctl list sink-inputs | awk '$1 == "index:" {print $2}')
-sink_index=$(sudo pactl list sinks | awk '$1 == "*" && $2 == "index:" {print $3}')
-sudo pactl move-sink-input $input_index $sink_index
+INPUT_INDEX=$(pcctl list sink-inputs | awk '$1 == "index:" {print $2}')
+SINK_INDEX=$(pactl list sinks | awk '$1 == "*" && $2 == "index:" {print $3}')
+pactl move-sink-input ${INPUT_INDEX} ${SINK_INDEX}
+
+# Configure Audio output for PulseAudio sink server.
+grep '\[audio\]' /etc/mopidy/mopidy.conf || bash -c 'cat >> /etc/mopidy/mopidy.conf <<EOT
+
+[audio]
+output = pulsesink server=127.0.0.1
+EOT'
+
+# Restart mopidy.
+service mopidy restart
 
 # Done.
 echo Done!
