@@ -18,6 +18,7 @@ fi
 
 # Start playing!
 # @see https://docs.mopidy.com/en/latest/clients/mpd/
+# @see https://github.com/HeadspringLabs/mopidy-qsaver/issues/4
 if [ -z ${PLAY_LIST} ]; then
     PLAY_LIST=`mpc lsplaylists | head -n 1`
 fi
