@@ -21,6 +21,9 @@ sh setup_autostart_vnc.sh
 # Setup Music Player.
 sh setup_music_player.sh
 
+# Setup Spotify.
+sh setup_spotify.sh
+
 # Setup BlueTooth Audio.
 sh setup_bluetooth_audio.sh
 
