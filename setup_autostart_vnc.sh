@@ -13,7 +13,10 @@ hash x11vnc 2>/dev/null || { echo >&2 "x11vnc command not found."; exit 1; }
 # Create for the usepw parameter.
 if [ ! -f ~/.vnc/passwd ]; then
     mkdir -p ~/.vnc
-    x11vnc -storepasswd "raspberry" ~/.vnc/passwd
+    if [ -z $VNC_PASSWD ]; then
+        read -p "What is your desired VNC Password?" VNC_PASSWD
+    fi
+    x11vnc -storepasswd ${VNC_PASSWD} ~/.vnc/passwd
 fi
 
 # Overwrite desktop file.

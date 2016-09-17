@@ -10,4 +10,18 @@ for mac in $paired; do
     macu=$(echo $mac |tr ":" "_")
     dbus-send --print-reply --system --dest=org.bluez /org/bluez/hci0/dev_$macu org.bluez.Device1.Connect
 done
+
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP" | festival --tts
+fi
+
+# Start playing!
+# @see https://docs.mopidy.com/en/latest/clients/mpd/
+if [ -z ${PLAY_LIST} ]; then
+    PLAY_LIST=`mpc lsplaylists | head -n 1`
+fi
+mpc load "${PLAY_LIST}"
 mpc play
+
+#EOF

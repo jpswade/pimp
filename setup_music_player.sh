@@ -23,7 +23,7 @@ apt-get --yes --force-yes install upmpdcli
 pip install --upgrade pip
 
 # Install Mopidy and packages via pip to get the latest version.
-pip install -U utils mopidy mopidy-local-sqlite mopidy-scrobbler mopidy-soundcloud mopidy-dirble mopidy-tunein mopidy-gmusic mopidy-subsonic mopidy-mobile mopidy-moped mopidy-musicbox-webclient mopidy-websettings mopidy-internetarchive mopidy-podcast mopidy-podcast-itunes Mopidy-Simple-Webclient mopidy-somafm mopidy-youtube Mopidy-Qsaver
+pip install -U utils mopidy mopidy-local-sqlite mopidy-scrobbler mopidy-soundcloud mopidy-dirble mopidy-tunein mopidy-gmusic mopidy-subsonic mopidy-mobile mopidy-moped mopidy-musicbox-webclient mopidy-websettings mopidy-internetarchive mopidy-podcast mopidy-podcast-itunes Mopidy-Simple-Webclient mopidy-somafm mopidy-youtube
 
 # Bugs
 #pip uninstall -y mopidy-podcast-gpodder.net
@@ -35,7 +35,6 @@ pip install -U utils mopidy mopidy-local-sqlite mopidy-scrobbler mopidy-soundclo
 pip install -U mopidy-gmusic
 
 # Configure HTTP.
-#sudo mopidyctl config
 grep '\[http\]' /etc/mopidy/mopidy.conf || bash -c 'cat >> /etc/mopidy/mopidy.conf <<EOT
 
 [http]
@@ -47,30 +46,32 @@ zeroconf = Mopidy HTTP server on $HOSTNAME
 EOT'
 
 # Configure QSaver.
+pip install -U Mopidy-Qsaver
 grep '\[qsaver\]' /etc/mopidy/mopidy.conf || bash -c 'cat >> /etc/mopidy/mopidy.conf <<EOT
 
 [qsaver]
 enabled = true
-backup_file = ./tracklist_backup.json
+backup_file = /etc/mopidy/tracklist_backup.json
 EOT'
+touch /etc/mopidy/tracklist_backup.json
 
 # Correct permissions
-#chown -R mopidy:mopidy /var/lib/mopidy/
+chown -R mopidy:root /etc/mopidy/
+#chown -R mopidy:root /var/lib/mopidy/
 
 # Start Mopidy.
+mopidyctl config
 systemctl enable mopidy
-#sudo systemctl restart mopidy
 systemctl start mopidy
 
 # Run local scan.
-#service mopidy run local scan
 mopidyctl local scan
 
 # Set IP Address
 IP_ADDR=`hostname  -I | cut -f1 -d' '`
 
 # Update library via RPC call.
-curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.library.refresh"}' http://$IP_ADDR:6680/mopidy/rpc
+curl -d '{"jsonrpc": "2.0", "id": 1, "method": "core.library.refresh"}' http://${IP_ADDR}:6680/mopidy/rpc
 
 # Display network information.
 echo open http://$IP_ADDR:6680
