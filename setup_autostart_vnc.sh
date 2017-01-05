@@ -13,13 +13,13 @@ hash x11vnc 2>/dev/null || { echo >&2 "x11vnc command not found."; exit 1; }
 if [ ! -f ~/.vnc/passwd ]; then
     mkdir -p ~/.vnc
     if [ -z $VNC_PASSWD ]; then
-        read -p "What is your desired VNC Password?" VNC_PASSWD
+        read -p "What is your desired VNC Password? " VNC_PASSWD
     fi
     x11vnc -storepasswd ${VNC_PASSWD} ~/.vnc/passwd
 fi
 
 # Overwrite desktop file.
-cat > /usr/share/applications/x11vnc.desktop <<EOT
+cat > /tmp/x11vnc.desktop <<EOT
 [Desktop Entry]
 Name=X11VNC Server
 Comment=Share this desktop by VNC
@@ -33,7 +33,9 @@ StartupNotify=false
 Categories=Network;RemoteAccess;
 EOT
 
+sudo mv /tmp/x11vnc.desktop /usr/share/applications/x11vnc.desktop
+
 # @see http://askubuntu.com/questions/5172/running-a-desktop-file-in-the-terminal
-gtk-launch x11vnc
+sudo gtk-launch x11vnc
 
 #EOF
