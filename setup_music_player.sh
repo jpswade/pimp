@@ -15,7 +15,7 @@ apt-get --yes --no-install-suggests --no-install-recommends install inetutils-to
 
 #apt-get install firmware-ipw2x00 # requires interaction, license agreement -- do we need this?
 #apt-get install upmpdcli # E: Unable to locate package upmpdcli
-printf "deb http://www.lesbonscomptes.com/upmpdcli/downloads/debian/ unstable main\ndeb-src http://www.lesbonscomptes.com/upmpdcli/downloads/debian/ unstable main">/etc/apt/sources.list.d/upmpdcli.list
+printf "deb http://www.lesbonscomptes.com/upmpdcli/downloads/debian/ unstable main\ndeb-src http://www.lesbonscomptes.com/upmpdcli/downloads/raspbian-jessie/ unstable main">/etc/apt/sources.list.d/upmpdcli.list
 apt-get update
 apt-get --yes --force-yes install upmpdcli
 
