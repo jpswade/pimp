@@ -35,6 +35,7 @@ EOT
 
 sudo mv /tmp/x11vnc.desktop /usr/share/applications/x11vnc.desktop
 
+export DISPLAY=:0
 # @see http://askubuntu.com/questions/5172/running-a-desktop-file-in-the-terminal
 sudo gtk-launch x11vnc
 
